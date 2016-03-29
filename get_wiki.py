@@ -2,6 +2,7 @@ import urllib2
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+import wikipedia
 
 
 def scrape_list(site):
@@ -36,6 +37,13 @@ def get_pageid(name):
         string = re.search('wgArticleId":(\d+)', f).group()
         return int(re.search('\d+', string).group())
     return int(re.search('\d+', string).group())
+
+def get_content(page):
+    try:
+        page = wikipedia.page(pageid=page)
+    except:
+          return 'NA'
+    return page.content
 
 if __name__ == '__main__':
     site = "https://en.wikipedia.org/w/index.php?title=List_of_S%26P_500_companies&oldid=697200065"
