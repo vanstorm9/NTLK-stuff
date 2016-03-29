@@ -7,11 +7,14 @@ import wikipedia
 
 def scrape_list(site):
     source_code = requests.get(site)
+    print 'Retrieved scrape data!'
     soup = BeautifulSoup(source_code.text,'html.parser')
+    print 'Searching. . .'
     table = soup.find('span', id='S.26P_500_Component_Stocks').parent.find_next_sibling('table')
     names = list()
     urls = list()
     ids = list()
+    print 'Parsing...'
     for row in table.findAll('tr'):
         col = row.findAll('td')
         if len(col) > 0:
@@ -47,7 +50,9 @@ def get_content(page):
 
 if __name__ == '__main__':
     site = "https://en.wikipedia.org/w/index.php?title=List_of_S%26P_500_companies&oldid=697200065"
+    print 'Scraping. . .'
     df = scrape_list(site)
+    print 'Finished scraping!'
     df['pageid'] = df['urls'].apply(get_pageid)
     df['content'] = df['pageid'].apply(get_content)
     df[df['content'] == 'NA']   #drop pages with links that do not exist
