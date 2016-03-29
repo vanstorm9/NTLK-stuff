@@ -24,15 +24,23 @@ def scrape_list(site):
     return df
 
 def get_pageid(name):
-    url = 'http://en.wikipedia.org/w/api.php?action=query&prop=info&format=json&titles=' + name
-    resp = requests.get(url)
-    data = resp.json()
+    
+    r  = requests.get(name)
+    data = r.text
+    soup = BeautifulSoup(data) 
+    s1 = soup.find_all('script')[1]
     try:
-        return data['query']['pages'].itervalues().next()['pageid']
+        string = re.search('wgArticleId":(\d+)', str(s1.string)).group()
     except:
-        return None
+        f = unicode.join(u'',map(unicode,s1.string))
+        string = re.search('wgArticleId":(\d+)', f).group()
+        return int(re.search('\d+', string).group())
+    return int(re.search('\d+', string).group())
 
 if __name__ == '__main__':
     site = "https://en.wikipedia.org/w/index.php?title=List_of_S%26P_500_companies&oldid=697200065"
     df = scrape_list(site)
+    df['pageid'] = df['urls'].apply(get_pageid)
+    df['content'] = df['pageid'].apply(get_content)
+    df[df['content'] == 'NA']   #drop pages with links that do not exist
     print df
