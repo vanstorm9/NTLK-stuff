@@ -1,4 +1,5 @@
 from nltk.stem.wordnet import WordNetLemmatizer
+from nltk.corpus import stopwords
 from nltk import word_tokenize
 import string
 
@@ -17,9 +18,11 @@ print ''
 
 
 for i in word_tokenize(sent):
+    i = i.lower()
     if i not in punctuations:
         #print i
-        print WordNetLemmatizer().lemmatize(i,'v')
+        if i not in stopwords.words('english'):
+            print WordNetLemmatizer().lemmatize(i,'v')
 
 
 
